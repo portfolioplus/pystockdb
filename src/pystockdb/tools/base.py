@@ -11,6 +11,8 @@ import logging
 
 from pony.orm import commit, db_session
 
+from pytickersymbols import PyTickerSymbols
+
 from pystockdb.db.schema.stocks import (Index, Item, PriceItem, Stock, Tag,
                                         Type, db)
 from pystockdb.tools.data_crawler import DataCrawler
@@ -25,11 +27,12 @@ class DBBase:
         self.logger = logger
         self.db_args = arguments["db_args"]
         self.arguments = arguments
+        self.ticker_symbols = PyTickerSymbols()
         # has connection
         if db.provider is None:
             # prepare db
             db.bind(**self.db_args)
-            if self.arguments.get('create', False):
+            if self.db_args.get('create_db', False):
                 db.generate_mapping(check_tables=False)
                 db.drop_all_tables(with_all_data=True)
                 db.create_tables()
@@ -75,7 +78,6 @@ class DBBase:
             stock = Stock(name=stock_info['name'],
                           price_item=PriceItem(item=Item()))
             # add symbols
-            "".startswith
             yao = Tag.get(name=Tag.YAO)
             gog = Tag.get(name=Tag.GOG)
             usd = Tag.get(name=Tag.USD)
@@ -117,6 +119,10 @@ class DBBase:
             ids = [symbol.name for symbol in chunk]
             series = crawler.get_series_stack(ids, start=start, end=end)
             for symbol in chunk:
+                self.logger.debug(
+                    'Add prices for {} from {} until {}.'.format(symbol.name,
+                                                                 start, end)
+                )
                 for value in series[symbol.name]:
                     symbol.prices.create(**value)
             commit()

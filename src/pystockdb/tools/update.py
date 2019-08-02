@@ -68,7 +68,7 @@ class UpdateDataBaseStocks(DBBase):
         for key in update:
             start = datetime.datetime.strptime(key, '%Y-%m-%d')
             end = datetime.datetime.now()
-            if start >= end:
+            if start.date() >= end.date():
                 continue
             self.download_historicals(update[key],
                                       start=start.strftime('%Y-%m-%d'),
@@ -89,7 +89,16 @@ class UpdateDataBaseStocks(DBBase):
         fundamentals = Fundamentals(base_url=Fundamentals.BASE_URL)
         tickers = fundamentals.get_ticker_ids(gog_syms)
         for ticker in tickers:
-            stock = [sto[0] for sto in stocks if sto[1] == ticker][0]
+            self.logger.debug(
+                'Download fundamentals for {}'.format(tickers[ticker])
+            )
+            stock = [sto[0] for sto in stocks if sto[1] == ticker]
+            if len(stock) != 1:
+                self.logger.warning(
+                    'Can not download fundamentals for {}'.format(ticker)
+                    )
+                continue
+            stock = stock[0]
             ica = fundamentals.get_income_analysis(tickers[ticker])
             ifc = fundamentals.get_income_facts(tickers[ticker])
             rec = fundamentals.get_recommendation(tickers[ticker])
@@ -99,16 +108,16 @@ class UpdateDataBaseStocks(DBBase):
             for val in [(ica, Tag.ICA), (ifc, Tag.ICF), (rec, Tag.REC),
                         (ble, Tag.BLE), (ico, Tag.ICO), (csh, Tag.CSH)]:
                 # hash stock name, tag and data
-                m = hashlib.md5()
+                m = hashlib.sha256()
                 m.update(val[1].encode('UTF-8'))
                 m.update(stock.name.encode('UTF-8'))
                 data_str = json.dumps(val[0])
                 m.update(data_str.encode('UTF-8'))
-                md5 = m.hexdigest()
+                shahash = m.hexdigest()
                 # only add data if not exist
-                if Data.get(md5=md5) is None:
+                if Data.get(hash=shahash) is None:
                     tag = Tag.get(name=val[1])
-                    obj = Data(data=val[0], md5=md5,
+                    obj = Data(data=val[0], hash=shahash,
                                data_item=DataItem(item=Item(tags=[tag])))
                     stock.data_items.add(obj.data_item)
         commit()

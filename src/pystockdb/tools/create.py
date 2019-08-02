@@ -11,10 +11,7 @@ import datetime
 import logging
 from datetime import timedelta
 
-from pony.orm import commit, db_session
-from pytickersymbols import PyTickerSymbols
-
-from pystockdb.db.schema.stocks import Symbol, Tag, Type
+from pystockdb.db.schema.stocks import Symbol, Tag
 from pystockdb.tools.base import DBBase
 
 
@@ -29,7 +26,6 @@ class CreateAndFillDataBase(DBBase):
         self.currency = arguments['currency']
         self.history = arguments['max_history']
         self.indices_list = arguments['indices']
-        self.ticker_symbols = PyTickerSymbols()
 
     def build(self):
         """

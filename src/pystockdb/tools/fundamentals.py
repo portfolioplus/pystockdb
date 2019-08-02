@@ -121,12 +121,12 @@ class Fundamentals(Consumer):
 
     @returns.json
     @get('/api/securities/stock/{ticker_id}/statementsV2Detail')
-    def get_sheet(self, ticker_id, type: Query,
+    def get_sheet(self, ticker_id, sheet_type: Query("type"),
                   query_number: Query('queryNumber') = 300):
         """
         Returns financial sheet(income, balance, cash flow) data for stock
         :param ticker_id: ticker id
-        :param type: income=1, balance=2 and cashflow = 3
+        :param sheet_type: income=1, balance=2 and cashflow = 3
         :param queryNumber:
         :return:
         """

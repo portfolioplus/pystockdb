@@ -50,10 +50,10 @@ class TestDatabase(unittest.TestCase):
             create_database('database_create.sqlite')
         with db_session:
             stocks = Stock.select().count()
-            assert stocks == 30
+            self.assertEqual(stocks, 30)
             prices = list(select(max(p.date) for p in Price))
-            assert len(prices) == 1
-            assert prices[0].strftime('%Y-%m-%d') == '2019-01-14'
+            self.assertEqual(len(prices), 1)
+            self.assertEqual(prices[0].strftime('%Y-%m-%d'), '2019-01-14')
 
     def test_update(self):
         """
@@ -75,17 +75,18 @@ class TestDatabase(unittest.TestCase):
         update.build()
         with db_session:
             prices = list(select(max(p.date) for p in Price))
-            assert len(prices) == 1
-            assert prices[0] > datetime.datetime.strptime('2019-01-14',
-                                                          '%Y-%m-%d')
+            self.assertEqual(len(prices), 1)
+            my_date = datetime.datetime.strptime('2019-01-14',
+                                                 '%Y-%m-%d')
+            self.assertGreater(prices[0], my_date)
             price_ctx = Price.select().count()
             data_ctx = Data.select().count()
         update.build()
         with db_session:
             price_ctx_now = Price.select().count()
             data_ctx_now = Data.select().count()
-            assert price_ctx_now == price_ctx
-            assert data_ctx_now == data_ctx
+            self.assertEqual(price_ctx_now, price_ctx)
+            self.assertEqual(data_ctx_now, data_ctx)
 
     def test_sync(self):
         """Tests sync tool
@@ -104,7 +105,7 @@ class TestDatabase(unittest.TestCase):
         sync.build()
         with db_session:
             stocks = Stock.select().count()
-            assert stocks == 71
+            self.assertEqual(stocks, 70)
 
 
 if __name__ == "__main__":

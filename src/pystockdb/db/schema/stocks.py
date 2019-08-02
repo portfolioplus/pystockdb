@@ -163,9 +163,9 @@ class Argument(db.Entity):
 
 class Data(db.Entity):
     id = PrimaryKey(int, auto=True)
-    date = Required(datetime, default=lambda: datetime.now())
+    date = Required(datetime, default=datetime.now())
     data = Required(Json)
-    md5 = Required(str)
+    hash = Required(str)
     data_item = Required('DataItem')
 
 
