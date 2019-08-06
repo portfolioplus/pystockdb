@@ -65,6 +65,8 @@ class Type(db.Entity):
     CUR = 'currency'
     MSC = 'misc'
     FDM = 'fundamentals'
+    FIL = 'filter'
+    IND = 'indicator'
 
     id = PrimaryKey(int, auto=True)
     name = Required(str, unique=True)

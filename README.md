@@ -16,6 +16,10 @@ If you want to have more, please contribute [pytickersymbols](https://github.com
 pip install pystockdb
 ```
 
+## database schema
+
+![StockDB Schema]( StockDB.png)
+
 ## quick start
 
 In all samples we use sqlite but you are free to use other providers.
@@ -81,6 +85,44 @@ config = {
 }
 sync = SyncDataBaseStocks(config, logger)
 sync.build()
+```
+
+Getting database objects:
+
+```python
+import datetime
+from pony.orm import db_session
+
+from pystockdb.db.schema.stocks import Price, Stock
+from pystockdb.tools.base import DBBase
+
+# connect to database
+
+arguments = {
+    'db_args': {
+    'provider': 'sqlite',
+    'filename': 'test.sqlite',
+    'create_db': False
+    }
+}
+# Read https://docs.ponyorm.org/api_reference.html for other provider settings
+
+DBBase(arguments, None)
+
+now = datetime.datetime.now()
+last_week = now - datetime.timedelta(days=7)
+with db_session:
+    # get ifx stock object
+    stock = Stock.select(
+        (lambda s: 'IFX.F' in s.price_item.symbols.name)
+    ).first()
+    # select ifx.f prices of the last week
+    prices = Price.select(
+        lambda p: p.symbol.name == 'IFX.F'
+        and p.date >= last_week
+        and p.date <= now
+    )
+
 ```
 
 ## issue tracker

@@ -2,17 +2,15 @@
 # -*- coding: utf-8 -*-
 """ pystockdb
 
- Copyright 2019 Slash Gordon
+  Copyright 2019 Slash Gordon
 
- Use of this source code is governed by a GNU General Public License v3 or
- later that can be
- found in the LICENSE file.
+  Use of this source code is governed by an MIT-style license that
+  can be found in the LICENSE file.
 """
-
 from setuptools import setup, find_packages
 
 EXCLUDE_FROM_PACKAGES = ['test', 'test.*', 'test*']
-VERSION = '1.0.0'
+VERSION = '1.0.1'
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
