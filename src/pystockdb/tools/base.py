@@ -138,6 +138,9 @@ class DBBase:
         Type(name=Type.CUR).add_tags([Tag.USD, Tag.EUR])
         Type(name=Type.FDM).add_tags([Tag.ICA, Tag.ICF, Tag.REC,
                                       Tag.ICO, Tag.BLE, Tag.CSH])
+        Type(name=Type.FIL)
+        Type(name=Type.ICR)
+        Type(name=Type.ARG)
         countries = self.ticker_symbols.get_all_countries()
         for country in countries:
             region_type.tags.create(name=country)

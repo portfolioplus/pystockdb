@@ -32,11 +32,11 @@ class Stock(db.Entity):
 
 class Signal(db.Entity):
     id = PrimaryKey(int, auto=True)
-    result = Optional('Result')
+    result = Required('Result')
     orders = Set('Order')
     item = Required('Item')
+    data_item = Optional('DataItem')
     price_items = Set('PriceItem')
-    data_item = Required('DataItem')
 
 
 class Tag(db.Entity):
@@ -66,7 +66,8 @@ class Type(db.Entity):
     MSC = 'misc'
     FDM = 'fundamentals'
     FIL = 'filter'
-    IND = 'indicator'
+    ICR = 'indicator'
+    ARG = 'argument'
 
     id = PrimaryKey(int, auto=True)
     name = Required(str, unique=True)
@@ -87,7 +88,7 @@ class Result(db.Entity):
     date = Required(datetime)
     value = Required(float)
     status = Required(int)
-    signal = Required(Signal)
+    signal = Optional(Signal)
     arguments = Set('Argument')
 
 
@@ -158,7 +159,7 @@ class PriceItem(db.Entity):
 
 class Argument(db.Entity):
     id = PrimaryKey(int, auto=True)
-    arg = Optional(float)
+    arg = Required(str)
     item = Required(Item)
     result = Required(Result)
 
