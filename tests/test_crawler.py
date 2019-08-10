@@ -61,6 +61,10 @@ class TestCrawler(unittest.TestCase):
         )
         ads_day = crawler.get_series('ADS.F', '1d')
         self.assertIsNotNone(ads_day)
+        dax_day = crawler.get_series('DAX', '1d')
+        self.assertIsNotNone(dax_day)
+        dax_day = crawler.get_series_stack(['DAX'], '1d')
+        self.assertIsNotNone(dax_day)
 
 
 if __name__ == "__main__":
