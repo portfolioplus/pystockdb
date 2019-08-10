@@ -66,7 +66,7 @@ class DBBase:
         if stock_in_db:
             self.logger.info(
                 'Add stock {}:{} to index.'.format(index.name,
-                                                   stock_in_db.symbol)
+                                                   stock_in_db.name)
             )
             index.stocks.add(stock_in_db)
         else:

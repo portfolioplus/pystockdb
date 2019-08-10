@@ -26,7 +26,6 @@ class Fundamentals(Consumer):
         :param keys: stock name or search string
         :return: json data
         """
-        pass
 
     def get_ticker_ids(self, symbols: Query):
         """
@@ -47,7 +46,7 @@ class Fundamentals(Consumer):
     @returns.json
     @get('/api/stocks/ticker/googleFinancial/tickerIdMapping')
     def __get_ticker_ids(self, symbols: Query):
-        pass
+        """get ticker ids raw. keep in mind that only 50 items are supported"""
 
     @returns.json
     @get('/api/securities/stock/{ticker_id}/recommendation')
@@ -57,7 +56,6 @@ class Fundamentals(Consumer):
         :param ticker_id: ticker id
         :return: json data
         """
-        pass
 
     @returns.json
     @get('/api/securities/stock/{ticker_id}/statementsV2Detail')
@@ -67,7 +65,6 @@ class Fundamentals(Consumer):
         :param ticker_id: ticker id
         :return: json data
         """
-        pass
 
     @returns.json
     @get('/api/securities/stock/{ticker_id}/incomeAnalysis/crucial')
@@ -77,7 +74,6 @@ class Fundamentals(Consumer):
         :param ticker_id: ticker id
         :return: json data
         """
-        pass
 
     @returns.json
     @get('/api/securities/stock/{ticker_id}/compBrief')
@@ -87,7 +83,6 @@ class Fundamentals(Consumer):
         :param ticker_id: ticker id
         :return: json data
         """
-        pass
 
     def get_cash_flow(self, ticker_id):
         """Returns cash flow of given symbol
@@ -130,4 +125,3 @@ class Fundamentals(Consumer):
         :param queryNumber:
         :return:
         """
-        pass

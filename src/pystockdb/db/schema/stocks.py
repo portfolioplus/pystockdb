@@ -29,6 +29,68 @@ class Stock(db.Entity):
     price_item = Required('PriceItem')
     data_items = Set('DataItem')
 
+    def get_data(self, key):
+        """
+        Returns company data by key
+        :param key:
+        :return:
+        """
+        data_item = DataItem.select(
+            lambda d: key in d.item.tags.name and d.stock == self
+        ).first()
+        if data_item:
+            for data in data_item.datas:
+                return data.data
+        return None
+
+    @staticmethod
+    def __recommendation(key, attr, datas):
+        if attr == 'rating' and 'rating' in datas:
+            return float(datas['rating'])
+        if 'measures' in datas:
+            for strut in datas['measures']:
+                if 'attr' in strut and 'value' in strut and \
+                   strut['attr'] == attr:
+                    try:
+                        return float(strut['value'])
+                    except ValueError:
+                        return -1
+        return -1
+
+    @staticmethod
+    def __other(key, attr, datas, annual, quarter_diff):
+        for idx, data in enumerate(datas):
+            if quarter_diff == 0 or idx >= quarter_diff:
+                if not annual or annual and 'annual' in data and \
+                   data['annual']:
+                    if 'struts' in data:
+                        for strut in data['struts']:
+                            if 'attr' in strut and 'value' in strut and \
+                               strut['attr'] == attr:
+                                try:
+                                    return float(strut['value'])
+                                except ValueError:
+                                    return -1
+        return -1
+
+    def get_data_attr(self, key, attr, annual=False, quarter_diff=0):
+        """
+        Get company data by key and attr
+        :param key:
+        :param attr:
+        :param annual:
+        :param quarter_diff:
+        :return:
+        """
+        datas = self.get_data(key)
+        if datas is None:
+            return None
+
+        if key == 'recommendation':
+            return self.__recommendation(key, attr, datas)
+        else:
+            return self.__other(key, attr, datas, annual, quarter_diff)
+
 
 class Signal(db.Entity):
     id = PrimaryKey(int, auto=True)
