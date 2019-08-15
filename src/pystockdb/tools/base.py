@@ -10,11 +10,10 @@
 import logging
 
 from pony.orm import commit, db_session
-
 from pytickersymbols import PyTickerSymbols
 
-from pystockdb.db.schema.stocks import (Index, Item, PriceItem, Stock, Tag,
-                                        Type, db)
+from pystockdb.db.schema.stocks import (Index, Item, PriceItem, Stock, Symbol,
+                                        Tag, Type, db)
 from pystockdb.tools.data_crawler import DataCrawler
 
 
@@ -83,18 +82,10 @@ class DBBase:
             usd = Tag.get(name=Tag.USD)
             eur = Tag.get(name=Tag.EUR)
             for symbol in stock_info['symbols']:
-                if Tag.GOG in symbol:
-                    cur = eur if symbol[Tag.GOG].startswith('FRA') else usd
-                    item = Item()
-                    item.add_tags([gog, cur])
-                    stock.price_item.symbols.create(item=item,
-                                                    name=symbol[Tag.GOG])
-                if Tag.YAO in symbol:
-                    cur = eur if symbol[Tag.YAO].endswith('.F') else usd
-                    item = Item()
-                    item.add_tags([yao, cur])
-                    stock.price_item.symbols.create(item=item,
-                                                    name=symbol[Tag.YAO])
+                if Tag.GOG in symbol and symbol[Tag.GOG] != '-':
+                    self.__create_symbol(stock, Tag.GOG, gog, symbol, eur, usd)
+                if Tag.YAO in symbol and symbol[Tag.YAO] != '-':
+                    self.__create_symbol(stock, Tag.YAO, yao, symbol, eur, usd)
             index.stocks.add(stock)
             # connect stock with industry and country
             # country
@@ -108,6 +99,21 @@ class DBBase:
                                     t.type.name == Type.IND)
             for industry in industries:
                 industry.items.add(stock.price_item.item)
+
+    @db_session
+    def __create_symbol(self, stock, my_tag, my_tag_item, symbol, eur, usd):
+        if my_tag in symbol and symbol[my_tag] != '-':
+            cur = eur if symbol[my_tag].startswith('FRA') else usd
+            item = Item()
+            item.add_tags([my_tag_item, cur])
+            if Symbol.get(name=symbol[my_tag]):
+                self.logger.warning(
+                    'Symbol {} is related to more than one'
+                    ' stock.'.format(symbol[my_tag])
+                )
+            else:
+                stock.price_item.symbols.create(item=item,
+                                                name=symbol[my_tag])
 
     @db_session
     def download_historicals(self, symbols, start, end):
