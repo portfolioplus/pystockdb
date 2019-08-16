@@ -52,6 +52,11 @@ class DBBase:
             index = Index(name=index_name, price_item=PriceItem(item=Item()))
             # add index symbol
             yah_sym = self.ticker_symbols.index_to_yahoo_symbol(index_name)
+            if yah_sym is None:
+                self.logger.warning(
+                    'Can not translate {} into yahoo symbol'.format(index_name)
+                )
+                continue
             idx_item = Item()
             idx_item.tags.add(Tag.get(name=Tag.IDX))
             index.price_item.symbols.create(name=yah_sym, item=idx_item)
@@ -123,6 +128,9 @@ class DBBase:
         chunks = [symbols[x:x + 50] for x in range(0, len(symbols), 50)]
         for chunk in chunks:
             ids = [symbol.name for symbol in chunk]
+            if ids is None:
+                continue
+            print(ids)
             series = crawler.get_series_stack(ids, start=start, end=end)
             for symbol in chunk:
                 self.logger.debug(
