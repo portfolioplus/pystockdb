@@ -168,7 +168,7 @@ class Price(db.Entity):
     close = Required(float)
     high = Required(float)
     low = Required(float)
-    volume = Required(int)
+    volume = Required(int, size=64)
     date = Required(datetime)
     symbol = Required(Symbol)
 
