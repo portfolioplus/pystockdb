@@ -35,7 +35,7 @@ logger = logging.getLogger('test')
 config = {
     'max_history': 1,
     'indices': ['DAX'],
-    'currency': 'EUR',
+    'currencies': ['EUR'],
     'db_args': {
         'provider': 'sqlite',
         'filename': 'demo.sqlite',
@@ -77,7 +77,7 @@ logger = logging.getLogger('test')
 config = {
     'max_history': 1,
     'indices': ['CAC 40'], # add new index to existing database
-    'currency': 'EUR',
+    'currencies': ['EUR'],
     'db_args': {
         'provider': 'sqlite',
         'filename': 'demo.sqlite',
