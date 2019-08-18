@@ -23,7 +23,7 @@ class CreateAndFillDataBase(DBBase):
     def __init__(self, arguments: dict, logger: logging.Logger):
         super(CreateAndFillDataBase, self).__init__(arguments, logger)
         self.logger = logger
-        self.currency = arguments['currency']
+        self.currencies = arguments['currencies']
         self.history = arguments['max_history']
         self.indices_list = arguments['indices']
 
@@ -36,20 +36,21 @@ class CreateAndFillDataBase(DBBase):
         if not self.indices_list:
             return 0
 
-        if self.currency not in [Tag.EUR, Tag.USD]:
-            self.logger.warning(
-                'Currency {} is not supported.'.format(self.currency)
-            )
-            return -1
+        for currency in self.currencies:
+            if currency not in [Tag.EUR, Tag.USD]:
+                self.logger.warning(
+                    'Currency {} is not supported.'.format(currency)
+                )
+                return -1
 
-        # add historical data
-        self.add_indices_and_stocks(self.indices_list)
-        # stocks
-        symbols = Symbol.select(lambda t: (Tag.YAO in t.item.tags.name and
-                                self.currency in t.item.tags.name) or
-                                Tag.IDX in t.item.tags.name)
-        end = datetime.datetime.now()
-        start = end - timedelta(days=self.history * 365)
-        self.download_historicals(symbols, start=start.strftime('%Y-%m-%d'),
-                                  end=end.strftime('%Y-%m-%d'))
+            # add historical data
+            self.add_indices_and_stocks(self.indices_list)
+            # stocks
+            symbols = Symbol.select(lambda t: (Tag.YAO in t.item.tags.name and
+                                    currency in t.item.tags.name) or
+                                    Tag.IDX in t.item.tags.name)
+            end = datetime.datetime.now()
+            start = end - timedelta(days=self.history * 365)
+            self.download_historicals(symbols, start=start.strftime('%Y-%m-%d'),
+                                      end=end.strftime('%Y-%m-%d'))
         return 0

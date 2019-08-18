@@ -26,7 +26,7 @@ def create_database(db_name):
     config = {
         'max_history': 1,
         'indices': ['DAX'],
-        'currency': 'EUR',
+        'currencies': ['EUR'],
         'db_args': {
             'provider': 'sqlite',
             'filename': db_name,
@@ -50,7 +50,7 @@ class TestDatabase(unittest.TestCase):
         config = {
             'max_history': 1,
             'indices': [],
-            'currency': 'EUR',
+            'currencies': ['EUR'],
             'db_args': {
                 'provider': 'sqlite',
                 'filename': 'database_create.sqlite',
@@ -61,7 +61,7 @@ class TestDatabase(unittest.TestCase):
         create = CreateAndFillDataBase(config, logger)
         self.assertEqual(create.build(), 0)
         config['indices'] = ['DAX']
-        config['currency'] = ['RUB']
+        config['currencies'] = ['RUB']
         create = CreateAndFillDataBase(config, logger)
         self.assertEqual(create.build(), -1)
         with freeze_time('2019-01-14'):
@@ -149,9 +149,9 @@ class TestDatabase(unittest.TestCase):
         update.build()
         with db_session:
             price_ctx_now = Price.select().count()
-            # data_ctx_now = Data.select().count()
-            self.assertEqual(price_ctx_now, price_ctx)
-            # self.assertEqual(data_ctx_now, data_ctx)
+            data_ctx_now = Data.select().count()
+            self.assertGreaterEqual(price_ctx_now, price_ctx)
+            self.assertGreaterEqual(data_ctx_now, data_ctx)
         config['symbols'] = ['ADS.F']
         update = UpdateDataBaseStocks(config, logger)
         update.build()
@@ -163,7 +163,7 @@ class TestDatabase(unittest.TestCase):
         config = {
             'max_history': 1,
             'indices': ['DAX', 'CAC 40'],
-            'currency': 'EUR',
+            'currencies': ['EUR'],
             'db_args': {
                 'provider': 'sqlite',
                 'filename': 'database_create.sqlite',
