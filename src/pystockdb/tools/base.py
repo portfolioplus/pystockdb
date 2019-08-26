@@ -9,7 +9,7 @@
 """
 import logging
 
-from pony.orm import commit, db_session
+from pony.orm import commit, db_session, core
 from pytickersymbols import PyTickerSymbols
 
 from pystockdb.db.schema.stocks import (Index, Item, PriceItem, Stock, Symbol,
@@ -28,16 +28,17 @@ class DBBase:
         self.arguments = arguments
         self.ticker_symbols = PyTickerSymbols()
         # has connection
-        if db.provider is None:
-            # prepare db
+        try:
             db.bind(**self.db_args)
-            if self.db_args.get('create_db', False):
-                db.generate_mapping(check_tables=False)
-                db.drop_all_tables(with_all_data=True)
-                db.create_tables()
-                self.__insert_initial_data()
-            else:
-                db.generate_mapping()
+        except core.BindingError:
+            pass
+        else:
+            db.generate_mapping(check_tables=False)
+
+        if self.db_args.get('create_db', False):
+            db.drop_all_tables(with_all_data=True)
+            db.create_tables()
+            self.__insert_initial_data()
 
     def build(self):
         """
