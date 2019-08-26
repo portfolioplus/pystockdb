@@ -126,3 +126,5 @@ venv/*
 src/pystockdb/tools/database_create.sqlite
 package-lock.json
 .vscode/settings.json
+tests/database_create.sqlite
+tests/database_create.sqlite

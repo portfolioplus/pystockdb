@@ -35,16 +35,14 @@ class CreateAndFillDataBase(DBBase):
         # add indices and stocks to db
         if not self.indices_list:
             return 0
-
+        if not all(cur in [Tag.EUR, Tag.USD] for cur in self.currencies):
+            self.logger.warning(
+                'Currency {} is not supported.'.format(self.currencies)
+            )
+            return -1
+        self.add_indices_and_stocks(self.indices_list)
+        # add historical data
         for currency in self.currencies:
-            if currency not in [Tag.EUR, Tag.USD]:
-                self.logger.warning(
-                    'Currency {} is not supported.'.format(currency)
-                )
-                return -1
-
-            # add historical data
-            self.add_indices_and_stocks(self.indices_list)
             # stocks
             symbols = Symbol.select(lambda t: (Tag.YAO in t.item.tags.name and
                                     currency in t.item.tags.name) or

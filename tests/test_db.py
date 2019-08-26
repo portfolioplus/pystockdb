@@ -21,22 +21,6 @@ from pystockdb.tools.sync import SyncDataBaseStocks
 from pystockdb.tools.update import UpdateDataBaseStocks
 
 
-def create_database(db_name):
-    logger = logging.getLogger('test')
-    config = {
-        'max_history': 1,
-        'indices': ['DAX'],
-        'currencies': ['EUR'],
-        'db_args': {
-            'provider': 'sqlite',
-            'filename': db_name,
-            'create_db': True
-        },
-    }
-    create = CreateAndFillDataBase(config, logger)
-    create.build()
-
-
 class TestDatabase(unittest.TestCase):
 
     def tearDown(self):
@@ -64,8 +48,26 @@ class TestDatabase(unittest.TestCase):
         config['currencies'] = ['RUB']
         create = CreateAndFillDataBase(config, logger)
         self.assertEqual(create.build(), -1)
+        config['currencies'] = ['EUR', 'USD']
+        # check setup with multiple currencies
         with freeze_time('2019-01-14'):
-            create_database('database_create.sqlite')
+            create = CreateAndFillDataBase(config, logger)
+            self.assertEqual(create.build(), 0)
+        with db_session:
+            # check euro
+            prices_ctx = Price.select(
+                lambda p: p.symbol.name == 'IFX.F'
+            ).count()
+            self.assertGreater(prices_ctx, 1)
+            # check usd
+            prices_ctx = Price.select(
+                lambda p: p.symbol.name == 'IFNNF'
+            ).count()
+            self.assertGreater(prices_ctx, 1)
+        with freeze_time('2019-01-14'):
+            config['currencies'] = ['EUR']
+            create = CreateAndFillDataBase(config, logger)
+            self.assertEqual(create.build(), 0)
         with db_session:
             stocks = Stock.select().count()
             self.assertEqual(stocks, 30)
