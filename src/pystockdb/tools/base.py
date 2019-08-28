@@ -109,7 +109,8 @@ class DBBase:
     @db_session
     def __create_symbol(self, stock, my_tag, my_tag_item, symbol, eur, usd):
         if my_tag in symbol and symbol[my_tag] != '-':
-            cur = eur if symbol[my_tag].startswith('FRA') else usd
+            cur = eur if symbol[my_tag].startswith('FRA') or \
+                symbol[my_tag].endswith('.F') else usd
             item = Item()
             item.add_tags([my_tag_item, cur])
             if Symbol.get(name=symbol[my_tag]):
