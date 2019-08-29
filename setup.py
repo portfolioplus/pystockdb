@@ -10,15 +10,18 @@
 from setuptools import setup, find_packages
 
 EXCLUDE_FROM_PACKAGES = ['test', 'test.*', 'test*']
-VERSION = '1.0.9'
+VERSION = '1.0.10'
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 INSTALL_REQUIRES = (
     [
-        'pytickersymbols>=1.1.6', 'pandas==0.25.1', 'yfinance>=0.1.44',
-        'uplink>=0.9.0', 'pony==0.7.10'
+        'pytickersymbols>=1.1.7',
+        'pandas==0.25.1',
+        'yfinance>=0.1.44',
+        'uplink>=0.9.0',
+        'pony==0.7.10'
     ]
 )
 
