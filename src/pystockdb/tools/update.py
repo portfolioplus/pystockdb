@@ -89,7 +89,7 @@ class UpdateDataBaseStocks(DBBase):
         fundamentals = Fundamentals(base_url=Fundamentals.BASE_URL)
         tickers = fundamentals.get_ticker_ids(gog_syms)
         for ticker in tickers:
-            self.logger.debug(
+            self.logger.info(
                 'Download fundamentals for {}'.format(tickers[ticker])
             )
             stock = [sto[0] for sto in stocks if sto[1] == ticker]
