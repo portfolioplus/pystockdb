@@ -16,7 +16,7 @@ from datetime import timedelta
 from pony.orm import commit, db_session, select
 
 from pystockdb.db.schema.stocks import (Data, DataItem, Item, Price, PriceItem,
-                                        Tag)
+                                        Tag, Symbol)
 from pystockdb.tools.base import DBBase
 from pystockdb.tools.fundamentals import Fundamentals
 
@@ -29,8 +29,9 @@ class UpdateDataBaseStocks(DBBase):
     def __init__(self, arguments: dict, logger: logging.Logger):
         super(UpdateDataBaseStocks, self).__init__(arguments, logger)
         self.logger = logger
-        self.db_args = arguments["db_args"]
-        self.symbols = arguments["symbols"]
+        self.db_args = arguments['db_args']
+        self.symbols = arguments['symbols']
+        self.history = arguments.get('max_history', 5)
 
     def build(self):
         """
@@ -48,13 +49,21 @@ class UpdateDataBaseStocks(DBBase):
         """Update all prices of stocks
         """
         # get symbols
-        prices = select((max(p.date), p.symbol) for p in Price)
+        prices = list(select((max(p.date), p.symbol) for p in Price))
         if 'ALL' not in self.symbols:
             price_filtered = []
             for symbol in set(self.symbols):
-                for price in prices:
-                    if symbol == price[1].name:
-                        price_filtered.append(price)
+                if len(prices) == 0:
+                    # download initial data
+                    price_filtered.append([
+                        datetime.datetime.now() -
+                        timedelta(days=365*self.history),
+                        Symbol.get(name=symbol)]
+                        )
+                else:
+                    for price in prices:
+                        if symbol == price[1].name:
+                            price_filtered.append(price)
             prices = price_filtered
         # create update dict
         update = {}
@@ -81,15 +90,24 @@ class UpdateDataBaseStocks(DBBase):
         """
         # select stock if first google symbol
         stocks = list(select((pit.stock, sym.name) for pit in PriceItem
-                      for sym in pit.symbols
-                      if (Tag.GOG in sym.item.tags.name) and
-                      sym.id == min(pit.symbols.id)))
+            for sym in pit.symbols
+            if (Tag.GOG in sym.item.tags.name) and
+            sym.id == min(pit.symbols.id)))
+        # filter specific stocks if not all
+        if 'ALL' not in self.symbols:
+            stocks_filtered = []
+            for stock in stocks:
+                for sym in self.symbols:
+                    for st_sym in stock[0].price_item.symbols:
+                        if sym == st_sym.name:
+                            stocks_filtered.append(stock)
+            stocks = stocks_filtered
         # create list of google symbols
         gog_syms = [sto[1] for sto in stocks]
         fundamentals = Fundamentals(base_url=Fundamentals.BASE_URL)
         tickers = fundamentals.get_ticker_ids(gog_syms)
         for ticker in tickers:
-            self.logger.debug(
+            self.logger.info(
                 'Download fundamentals for {}'.format(tickers[ticker])
             )
             stock = [sto[0] for sto in stocks if sto[1] == ticker]
