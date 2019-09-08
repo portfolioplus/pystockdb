@@ -200,6 +200,53 @@ class TestDatabase(unittest.TestCase):
         self.assertIsInstance(rat, float)
         self.assertIsInstance(eps, float)
 
+    def test_6_create_flat(self):
+        """
+        Test flat create
+        :return:
+        """
+        config = {
+            'max_history': 1,
+            'indices': ['DAX'],
+            'currencies': ['EUR'],
+            'prices': False,  # disables price downloading
+            'db_args': {
+                'provider': 'sqlite',
+                'filename': 'database_create.sqlite',
+                'create_db': True
+            },
+        }
+        logger = logging.getLogger('test')
+        create = CreateAndFillDataBase(config, logger)
+        self.assertEqual(create.build(), 0)
+        with db_session:
+            # check euro
+            prices_ctx = select(p for p in Price).count()
+            self.assertEqual(prices_ctx, 0)
+
+        config = {
+            'symbols': ['IFX.F', 'ADS.F'],
+            'prices': True,
+            'fundamentals': True,
+            'max_history': 1,
+            'db_args': {
+                'provider': 'sqlite',
+                'filename': 'database_create.sqlite',
+                'create_db': False
+            },
+        }
+        update = UpdateDataBaseStocks(config, logger)
+        self.assertEqual(update.build(), 0)
+        with db_session:
+            prices_ctx = Price.select(
+                lambda p: p.symbol.name == 'IFX.F'
+            ).count()
+            self.assertGreater(prices_ctx, 1)
+            prices_ctx = Price.select(
+                lambda p: p.symbol.name == 'ADS.F'
+            ).count()
+            self.assertGreater(prices_ctx, 1)
+
 
 if __name__ == "__main__":
     unittest.main()
