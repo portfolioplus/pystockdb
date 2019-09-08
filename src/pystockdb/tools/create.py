@@ -26,6 +26,7 @@ class CreateAndFillDataBase(DBBase):
         self.currencies = arguments['currencies']
         self.history = arguments['max_history']
         self.indices_list = arguments['indices']
+        self.prices = arguments.get('prices', True)
 
     def build(self):
         """
@@ -35,12 +36,18 @@ class CreateAndFillDataBase(DBBase):
         # add indices and stocks to db
         if not self.indices_list:
             return 0
-        if not all(cur in [Tag.EUR, Tag.USD] for cur in self.currencies):
+        if not all(cur in [Tag.EUR, Tag.USD] for cur in self.currencies) \
+           and self.prices:
             self.logger.warning(
                 'Currency {} is not supported.'.format(self.currencies)
             )
             return -1
         self.add_indices_and_stocks(self.indices_list)
+
+        # skip download prices
+        if not self.prices:
+            return 0
+
         # add historical data
         for currency in self.currencies:
             # stocks
