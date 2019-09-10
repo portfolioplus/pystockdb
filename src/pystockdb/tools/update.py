@@ -90,9 +90,18 @@ class UpdateDataBaseStocks(DBBase):
         """
         # select stock if first google symbol
         stocks = list(select((pit.stock, sym.name) for pit in PriceItem
-                      for sym in pit.symbols
-                      if (Tag.GOG in sym.item.tags.name) and
-                      sym.id == min(pit.symbols.id)))
+            for sym in pit.symbols
+            if (Tag.GOG in sym.item.tags.name) and
+            sym.id == min(pit.symbols.id)))
+        # filter specific stocks if not all
+        if 'ALL' not in self.symbols:
+            stocks_filtered = []
+            for stock in stocks:
+                for sym in self.symbols:
+                    for st_sym in stock[0].price_item.symbols:
+                        if sym == st_sym.name:
+                            stocks_filtered.append(stock)
+            stocks = stocks_filtered
         # create list of google symbols
         gog_syms = [sto[1] for sto in stocks]
         fundamentals = Fundamentals(base_url=Fundamentals.BASE_URL)
