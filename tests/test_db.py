@@ -246,7 +246,8 @@ class TestDatabase(unittest.TestCase):
                 lambda p: p.symbol.name == 'ADS.F'
             ).count()
             self.assertGreater(prices_ctx, 1)
-
+            data_ctx = select(d for d in Data).count()
+            self.assertEqual(data_ctx, 12)
 
 if __name__ == "__main__":
     unittest.main()
