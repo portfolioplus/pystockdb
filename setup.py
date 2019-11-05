@@ -18,7 +18,7 @@ with open("README.md", "r") as fh:
 INSTALL_REQUIRES = (
     [
         'pytickersymbols>=1.1.8',
-        'pandas==0.25.2',
+        'pandas==0.25.3',
         'yfinance>=0.1.44',
         'uplink>=0.9.0',
         'pony==0.7.11'
