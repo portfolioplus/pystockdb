@@ -1,7 +1,7 @@
 # pystockdb
 
 [![Build Status](https://travis-ci.org/portfolioplus/pystockdb.svg?branch=master)](https://travis-ci.org/portfolioplus/pystockdb)
-![PyPI - Downloads](https://img.shields.io/pypi/dd/pystockdb?style=plastic)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/pystockdb?style=plastic)
 [![Coverage Status](https://coveralls.io/repos/github/portfolioplus/pystockdb/badge.svg?branch=master)](https://coveralls.io/github/portfolioplus/pystockdb?branch=master)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/07e6231a5a8c415a9f27736e02a286da)](https://www.codacy.com/app/SlashGordon/pystockdb?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=portfolioplus/pystockdb&amp;utm_campaign=Badge_Grade)
 
