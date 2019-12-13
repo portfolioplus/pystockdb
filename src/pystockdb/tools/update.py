@@ -19,6 +19,7 @@ from pystockdb.db.schema.stocks import (Data, DataItem, Item, Price, PriceItem,
                                         Tag, Symbol)
 from pystockdb.tools.base import DBBase
 from pystockdb.tools.fundamentals import Fundamentals
+from pystockdb.tools import ALL_SYMBOLS
 
 
 class UpdateDataBaseStocks(DBBase):
@@ -50,7 +51,7 @@ class UpdateDataBaseStocks(DBBase):
         """
         # get symbols
         prices = list(select((max(p.date), p.symbol) for p in Price))
-        if 'ALL' not in self.symbols:
+        if ALL_SYMBOLS not in self.symbols:
             price_filtered = []
             for symbol in set(self.symbols):
                 if len(prices) == 0:
@@ -90,11 +91,11 @@ class UpdateDataBaseStocks(DBBase):
         """
         # select stock if first google symbol
         stocks = list(select((pit.stock, sym.name) for pit in PriceItem
-            for sym in pit.symbols
-            if (Tag.GOG in sym.item.tags.name) and
-            sym.id == min(pit.symbols.id)))
+                             for sym in pit.symbols
+                             if (Tag.GOG in sym.item.tags.name) and
+                             sym.id == min(pit.symbols.id)))
         # filter specific stocks if not all
-        if 'ALL' not in self.symbols:
+        if ALL_SYMBOLS not in self.symbols:
             stocks_filtered = []
             for stock in stocks:
                 for sym in self.symbols:
