@@ -19,6 +19,7 @@ from pystockdb.tools.base import DBBase
 from pystockdb.tools.create import CreateAndFillDataBase
 from pystockdb.tools.sync import SyncDataBaseStocks
 from pystockdb.tools.update import UpdateDataBaseStocks
+from pystockdb.tools import ALL_SYMBOLS
 
 
 class TestDatabase(unittest.TestCase):
@@ -127,7 +128,7 @@ class TestDatabase(unittest.TestCase):
         """
         logger = logging.getLogger('test')
         config = {
-            'symbols': ['ALL'],
+            'symbols': [ALL_SYMBOLS],
             'prices': True,
             'fundamentals': True,
             'db_args': {

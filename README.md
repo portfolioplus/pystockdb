@@ -51,11 +51,12 @@ Update sqlite stock db:
 
 ```python
 import logging
+from pystockdb.tools import ALL_SYMBOLS
 from pystockdb.tools.update import UpdateDataBaseStocks
 
 logger = logging.getLogger('test')
 config = {
-    'symbols': ['ALL'],
+    'symbols': [ALL_SYMBOLS],
     'prices': True,       # update prices
     'fundamentals': True, # update fundamental stock data
     'db_args': {
