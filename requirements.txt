@@ -1,5 +1,5 @@
 pytickersymbols>=1.1.8
-pandas==0.25.3
+pandas==1.0.0
 yfinance==0.1.54
 uplink==0.9.0
 pony==0.7.11
