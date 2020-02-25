@@ -21,7 +21,7 @@ INSTALL_REQUIRES = (
         'pandas==0.25.3',
         'yfinance>=0.1.52',
         'uplink>=0.9.0',
-        'pony==0.7.11'
+        'pony==0.7.12'
     ]
 )
 
