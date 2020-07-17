@@ -36,7 +36,7 @@ class CreateAndFillDataBase(DBBase):
         # add indices and stocks to db
         if not self.indices_list:
             return 0
-        if not all(cur in [Tag.EUR, Tag.USD] for cur in self.currencies) \
+        if not all(cur in [Tag.EUR, Tag.USD, Tag.RUB] for cur in self.currencies) \
            and self.prices:
             self.logger.warning(
                 'Currency {} is not supported.'.format(self.currencies)

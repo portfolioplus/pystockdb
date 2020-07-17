@@ -106,6 +106,7 @@ class Tag(db.Entity):
     GOG = 'google'
     USD = 'USD'
     EUR = 'EUR'
+    RUB = 'RUB'
     IDX = 'index'
     ICA = 'incomeanalysis'
     ICF = 'incomefacts'

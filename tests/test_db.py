@@ -46,7 +46,7 @@ class TestDatabase(unittest.TestCase):
         create = CreateAndFillDataBase(config, logger)
         self.assertEqual(create.build(), 0)
         config['indices'] = ['DAX']
-        config['currencies'] = ['RUB']
+        config['currencies'] = ['CAD']
         create = CreateAndFillDataBase(config, logger)
         self.assertEqual(create.build(), -1)
         config['currencies'] = ['EUR', 'USD']
@@ -74,54 +74,9 @@ class TestDatabase(unittest.TestCase):
             self.assertEqual(stocks, 30)
             prices = list(select(max(p.date) for p in Price))
             self.assertEqual(len(prices), 1)
-            self.assertEqual(prices[0].strftime('%Y-%m-%d'), '2019-01-14')
+            self.assertEqual(prices[0].strftime('%Y-%m-%d'), '2019-01-11')
 
-    @db_session
-    def test_2_dbbase(self):
-        config = {
-            'db_args': {
-                'provider': 'sqlite',
-                'filename': 'database_create.sqlite',
-                'create_db': False
-            }
-        }
-        logger = logging.getLogger('test')
-        dbbase = DBBase(config, logger)
-        ind = Index.get(name='test123')
-        if ind:
-            ind.delete()
-        sym = Symbol.get(name='test123')
-        if sym:
-            sym.delete()
-        self.assertRaises(NotImplementedError, dbbase.build)
-        self.assertFalse(dbbase.download_historicals(None, None, None))
-
-        # override pytickersymbols
-        def get_stocks_by_index(name):
-            stock = {
-                'name': 'adidas AG',
-                'symbol': 'ADS',
-                'country': 'Germany',
-                'indices': ['DAX', 'test123'],
-                'industries': [],
-                'symbols': []
-            }
-            return [stock]
-
-        def index_to_yahoo_symbol(name):
-            return 'test123'
-
-        dbbase.ticker_symbols.get_stocks_by_index = get_stocks_by_index
-        dbbase.ticker_symbols.index_to_yahoo_symbol = index_to_yahoo_symbol
-        dbbase.add_indices_and_stocks(['test123'])
-        ads = Stock.select(
-            lambda s: 'test123' in s.indexs.name
-        ).first()
-        self.assertNotEqual(ads, None)
-        Index.get(name='test123').delete()
-        Symbol.get(name='test123').delete()
-
-    def test_3_update(self):
+    def test_2_update(self):
         """
         Test database client update
         :return:
@@ -159,7 +114,7 @@ class TestDatabase(unittest.TestCase):
         update = UpdateDataBaseStocks(config, logger)
         update.build()
 
-    def test_4_sync(self):
+    def test_3_sync(self):
         """Tests sync tool
         """
         logger = logging.getLogger('test')
@@ -180,7 +135,7 @@ class TestDatabase(unittest.TestCase):
             self.assertEqual(stocks, 70)
 
     @db_session
-    def test_5_query_data(self):
+    def test_4_query_data(self):
         ifx = Stock.select(
             lambda s: 'IFX.F' in s.price_item.symbols.name
         ).first()
@@ -201,7 +156,7 @@ class TestDatabase(unittest.TestCase):
         self.assertIsInstance(rat, float)
         self.assertIsInstance(eps, float)
 
-    def test_6_create_flat(self):
+    def test_5_create_flat(self):
         """
         Test flat create
         :return:
@@ -249,6 +204,51 @@ class TestDatabase(unittest.TestCase):
             self.assertGreater(prices_ctx, 1)
             data_ctx = select(d for d in Data).count()
             self.assertEqual(data_ctx, 12)
+
+    @db_session
+    def test_6_dbbase(self):
+        config = {
+            'db_args': {
+                'provider': 'sqlite',
+                'filename': 'database_create.sqlite',
+                'create_db': False
+            }
+        }
+        logger = logging.getLogger('test')
+        dbbase = DBBase(config, logger)
+        ind = Index.get(name='test123')
+        if ind:
+            ind.delete()
+        sym = Symbol.get(name='test123')
+        if sym:
+            sym.delete()
+        self.assertRaises(NotImplementedError, dbbase.build)
+        self.assertFalse(dbbase.download_historicals(None, None, None))
+
+        # override pytickersymbols
+        def get_stocks_by_index(name):
+            stock = {
+                'name': 'adidas AG',
+                'symbol': 'ADS',
+                'country': 'Germany',
+                'indices': ['DAX', 'test123'],
+                'industries': [],
+                'symbols': []
+            }
+            return [stock]
+
+        def index_to_yahoo_symbol(name):
+            return 'test123'
+
+        dbbase.ticker_symbols.get_stocks_by_index = get_stocks_by_index
+        dbbase.ticker_symbols.index_to_yahoo_symbol = index_to_yahoo_symbol
+        dbbase.add_indices_and_stocks(['test123'])
+        ads = Stock.select(
+            lambda s: 'test123' in s.indexs.name
+        ).first()
+        self.assertNotEqual(ads, None)
+        Index.get(name='test123').delete()
+        Symbol.get(name='test123').delete()
 
 if __name__ == "__main__":
     unittest.main()

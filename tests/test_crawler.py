@@ -15,8 +15,8 @@ from pystockdb.tools.fundamentals import Fundamentals
 
 class TestCrawler(unittest.TestCase):
 
-    SYMBOLS = ['FRA:ADS', 'FRA:BAYN', 'FRA:BMW', 'FRA:ADP', 'NASDAQ:BBBY']
-    SYMBOLS_Y = ['ADS.F', 'BAYN.F', 'BMW.F', 'ADP.F']
+    SYMBOLS = ['OTCMKTS:ADDDF', 'OTCMKTS:BAYZF', 'OTCMKTS:BMWYY', 'NASDAQ:ADP', 'NASDAQ:BBBY']
+    SYMBOLS_Y = ['ADDDF', 'BAYZF', 'BMWYY', 'ADP']
 
     def test_fundamentals(self):
         """
