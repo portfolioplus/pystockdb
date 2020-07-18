@@ -146,9 +146,16 @@ class DBBase:
             ):
                 cur = rub
 
+            item = Item()
             if cur:
-                item = Item()
                 item.add_tags([my_tag_item, cur])
+            else:
+                self.logger.warning(
+                    'Currency detection for Symbol {} failed.'.format(
+                        symbol[my_tag]
+                    )
+                )
+
             if Symbol.get(name=symbol[my_tag]):
                 self.logger.warning(
                     'Symbol {} is related to more than one'
