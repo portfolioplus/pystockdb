@@ -130,8 +130,11 @@ class DBBase:
     ):
         if my_tag in symbol and symbol[my_tag] != '-':
             cur = None
-            if symbol[my_tag].startswith('FRA:') or symbol[my_tag].endswith(
-                '.F'
+            if (
+                symbol[my_tag].startswith('FRA:')
+                or symbol[my_tag].endswith('.F')
+                or symbol[my_tag].startswith('BME:')
+                or symbol[my_tag].endswith('.MC')
             ):
                 cur = eur
             elif (
