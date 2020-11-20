@@ -1,0 +1,16 @@
+{
+  "branches": [
+    "master"
+  ],
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    "@semantic-release/github",
+    ["@semantic-release/exec", {
+      "verifyConditionsCmd": "python -m pip install -U pip setuptools wheel twine",
+      "prepareCmd": "sed -i 's/0.0.0/${nextRelease.version}/' setup.py",
+      "publishCmd": "python setup.py sdist bdist_wheel && twine upload dist/*"
+    }]
+  ]
+}
+

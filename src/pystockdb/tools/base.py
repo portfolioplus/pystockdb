@@ -172,7 +172,7 @@ class DBBase:
         if not (start and end):
             return False
         crawler = DataCrawler()
-        chunks = [symbols[x : x + 50] for x in range(0, len(symbols), 50)]
+        chunks = [symbols[x: x + 50] for x in range(0, len(symbols), 50)]
         for chunk in chunks:
             ids = [symbol.name for symbol in chunk]
             if ids is None:

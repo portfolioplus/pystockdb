@@ -36,8 +36,12 @@ class CreateAndFillDataBase(DBBase):
         # add indices and stocks to db
         if not self.indices_list:
             return 0
-        if not all(cur in [Tag.EUR, Tag.USD, Tag.RUB] for cur in self.currencies) \
-           and self.prices:
+        if (
+            not all(
+                cur in [Tag.EUR, Tag.USD, Tag.RUB] for cur in self.currencies
+            )
+            and self.prices
+        ):
             self.logger.warning(
                 'Currency {} is not supported.'.format(self.currencies)
             )
@@ -51,11 +55,18 @@ class CreateAndFillDataBase(DBBase):
         # add historical data
         for currency in self.currencies:
             # stocks
-            symbols = Symbol.select(lambda t: (Tag.YAO in t.item.tags.name and
-                                    currency in t.item.tags.name) or
-                                    Tag.IDX in t.item.tags.name)
+            symbols = Symbol.select(
+                lambda t: (
+                    Tag.YAO in t.item.tags.name
+                    and currency in t.item.tags.name
+                )
+                or Tag.IDX in t.item.tags.name
+            )
             end = datetime.datetime.now()
             start = end - timedelta(days=self.history * 365)
-            self.download_historicals(symbols, start=start.strftime('%Y-%m-%d'),
-                                      end=end.strftime('%Y-%m-%d'))
+            self.download_historicals(
+                symbols,
+                start=start.strftime('%Y-%m-%d'),
+                end=end.strftime('%Y-%m-%d'),
+            )
         return 0
