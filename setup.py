@@ -8,6 +8,7 @@
   can be found in the LICENSE file.
 """
 from setuptools import setup, find_packages
+import re
 
 EXCLUDE_FROM_PACKAGES = ['test', 'test.*', 'test*']
 VERSION = '0.0.0'
@@ -24,6 +25,10 @@ INSTALL_REQUIRES = (
         'pony==0.7.13'
     ]
 )
+with open('src/pystockdb/__init__.py', 'r') as fd:
+    VERSION = re.search(
+        r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', fd.read(), re.MULTILINE
+    ).group(1)
 
 setup(
     name="pystockdb",

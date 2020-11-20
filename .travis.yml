@@ -6,15 +6,3 @@ install:
   - pip install tox-travis coveralls
 script:
   - tox
-deploy:
-  provider: pypi
-  skip_cleanup: true
-  distributions: "bdist_wheel"
-  user: "__token__"
-  password:
-    secure: "SBgM5CTPzIeE/+uIU/lRM79/aoOzq89CAgpnWhzNEiQ0JmR+SctTDGJ6xWdZTHxpex9vKJQf/gqr9jIhXe4TvUn/kU69EHyg/I0RkMtxxmWFCHkLTansbkw5s/lgcdCL7IeTK0EKKoLwTzKYLqGzjCp8cHvzfHCzzYR6rT1RNHYEI0R+v0UuP2DHhMvJDoRu1COoDSXhS/iEOvd2Wj/9LMZBA5fasbLG8nHgn0Ob4t4PHkQpn2Wg4jSclr1t1/Rh6zoBO5SxuAsJaZvo+HVqEBZq3doPK3wo3JxqU6OP1xUboOZCbAXaPsxMbI5CadzkejAbV6cS19um9GHmRGtDsbRbzNMDtAv+3Z8w5SmUyL2oXqd6HMLYxOCBM1mniRxAeJuu+/cZ0NGAAkaDQuHTNlWqiadJLuVJiYz9Py2UXL3ghfJzt179tnLIpCDNopycCBac6hh8DHXDpikiwGCuVP9u+fwlDBME1Gx0/dV+sHDbozDQe2DDwUpsdGkKfpjCHlqLvE1g3uIdCSR3elWE9t3TjhavFSgP9J9k3osqFgvGZLXbLQrugjpe2lNxDOa+RfqxDnK9wNynpG3NqiZAkf7IYHn8UwGuZ0IHucdJPd/7DOg4glFlNbwGuu3yuBmJRxRBBlPR17zijL8K08pAY/EDxHAb+bTvS5gnFHmCl9A="
-  on:
-    branch: master
-  skip_existing: true
-after_success:
-- coveralls --verbose
