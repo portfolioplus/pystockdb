@@ -1,5 +1,6 @@
 # pystockdb
 
+![Release Build](https://github.com/portfolioplus/pystockdb/workflows/Release%20Build/badge.svg)
 [![Build Status](https://travis-ci.org/portfolioplus/pystockdb.svg?branch=master)](https://travis-ci.org/portfolioplus/pystockdb)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/pystockdb?style=plastic)
 [![Coverage Status](https://coveralls.io/repos/github/portfolioplus/pystockdb/badge.svg?branch=master)](https://coveralls.io/github/portfolioplus/pystockdb?branch=master)
