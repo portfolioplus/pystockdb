@@ -36,6 +36,7 @@ class TestDatabase(unittest.TestCase):
             'max_history': 1,
             'indices': [],
             'currencies': ['EUR'],
+            'create': True,
             'db_args': {
                 'provider': 'sqlite',
                 'filename': 'database_create.sqlite',
@@ -166,6 +167,7 @@ class TestDatabase(unittest.TestCase):
             'indices': ['DAX'],
             'currencies': ['EUR'],
             'prices': False,  # disables price downloading
+            'create': True,
             'db_args': {
                 'provider': 'sqlite',
                 'filename': 'database_create.sqlite',

@@ -43,7 +43,7 @@ class DBBase:
         else:
             db.generate_mapping(check_tables=False)
 
-        if self.db_args.get('create_db', False):
+        if self.arguments.get('create', False):
             db.drop_all_tables(with_all_data=True)
             db.create_tables()
             self.__insert_initial_data()
@@ -172,7 +172,7 @@ class DBBase:
         if not (start and end):
             return False
         crawler = DataCrawler()
-        chunks = [symbols[x : x + 50] for x in range(0, len(symbols), 50)]
+        chunks = [symbols[x: x + 50] for x in range(0, len(symbols), 50)]
         for chunk in chunks:
             ids = [symbol.name for symbol in chunk]
             if ids is None:

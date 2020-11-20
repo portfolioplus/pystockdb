@@ -27,6 +27,30 @@ In all samples we use sqlite but you are free to use other providers.
 For more information's please read [Connecting to the Database](https://docs.ponyorm.org/database.html).
 
 Install sqlite stock db:
+```python
+import logging
+from pystockdb.tools.create import CreateAndFillDataBase
+
+logger = logging.getLogger('test')
+config = {
+    'max_history': 1,
+    'indices': ['DAX'],
+    'currencies': ['EUR'],
+    'create': True
+    'db_args': {
+        'provider': 'sqlite',
+        'filename': 'demo.sqlite',
+        'create_db': True
+    },
+}
+create = CreateAndFillDataBase(config, logger)
+create.build()
+```
+
+Install mysql stock db:
+
+For mysql you need an additional package:
+`pip install pymysql`
 
 ```python
 import logging
@@ -37,12 +61,16 @@ config = {
     'max_history': 1,
     'indices': ['DAX'],
     'currencies': ['EUR'],
+    'create': True
     'db_args': {
-        'provider': 'sqlite',
-        'filename': 'demo.sqlite',
-        'create_db': True
+        'provider': 'mysql',
+        'host': '127.0.0.1',
+        'user': 'root',
+        'passwd': 'test',
+        'db': 'test',
     },
 }
+
 create = CreateAndFillDataBase(config, logger)
 create.build()
 ```

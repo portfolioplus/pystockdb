@@ -122,6 +122,6 @@ class Fundamentals(Consumer):
         Returns financial sheet(income, balance, cash flow) data for stock
         :param ticker_id: ticker id
         :param sheet_type: income=1, balance=2 and cashflow = 3
-        :param queryNumber:
+        :param query_number:
         :return:
         """
