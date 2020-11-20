@@ -43,7 +43,7 @@ class DBBase:
         else:
             db.generate_mapping(check_tables=False)
 
-        if self.db_args.get('create_db', False):
+        if self.arguments.get('create', False):
             db.drop_all_tables(with_all_data=True)
             db.create_tables()
             self.__insert_initial_data()

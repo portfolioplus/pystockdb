@@ -86,7 +86,7 @@ class DataCrawler:
                     'high': series.High,
                     'low': series.Low,
                     'volume': int(series.Volume),
-                    'date': timestamp
+                    'date': timestamp.to_pydatetime()
                 }
             )
         return series_list
