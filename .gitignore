@@ -128,3 +128,4 @@ package-lock.json
 .vscode/settings.json
 tests/database_create.sqlite
 tests/database_create.sqlite
+test-results/test.xml

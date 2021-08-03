@@ -27,15 +27,16 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           files: test-results/**/*.xml
+      - name: Coveralls
+        uses: AndreMiras/coveralls-python-action@develop
+        with:
+          parallel: true
+          debug: true
       - name: Python Semantic Release
         uses: relekang/python-semantic-release@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           pypi_token: ${{ secrets.PYPI_TOKEN }}
-      - name: Coveralls
-        uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
   coveralls_finish:
     needs: release
     runs-on: ubuntu-latest

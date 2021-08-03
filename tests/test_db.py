@@ -205,7 +205,7 @@ class TestDatabase(unittest.TestCase):
             ).count()
             self.assertGreater(prices_ctx, 1)
             data_ctx = select(d for d in Data).count()
-            self.assertEqual(data_ctx, 12)
+            self.assertGreater(data_ctx, 1)
 
     @db_session
     def test_6_dbbase(self):
