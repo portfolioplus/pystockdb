@@ -22,7 +22,7 @@ INSTALL_REQUIRES = (
         'pandas==1.2.3',
         'yfinance>=0.1.52',
         'uplink>=0.9.0',
-        'pony==0.7.14'
+        'pony==0.7.16'
     ]
 )
 with open('src/pystockdb/__init__.py', 'r') as fd:
