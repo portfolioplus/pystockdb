@@ -36,7 +36,7 @@ config = {
     'max_history': 1,
     'indices': ['DAX'],
     'currencies': ['EUR'],
-    'create': True
+    'create': True,
     'db_args': {
         'provider': 'sqlite',
         'filename': 'demo.sqlite',
@@ -61,7 +61,7 @@ config = {
     'max_history': 1,
     'indices': ['DAX'],
     'currencies': ['EUR'],
-    'create': True
+    'create': True,
     'db_args': {
         'provider': 'mysql',
         'host': '127.0.0.1',
