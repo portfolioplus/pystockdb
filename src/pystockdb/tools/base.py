@@ -199,7 +199,7 @@ class DBBase:
         Type(name=Type.SYM).add_tags([Tag.YAO, Tag.GOG])
         Type(name=Type.CUR).add_tags([Tag.USD, Tag.EUR, Tag.RUB])
         Type(name=Type.FDM).add_tags(
-            [Tag.ICA, Tag.ICF, Tag.REC, Tag.ICO, Tag.BLE, Tag.CSH]
+            [Tag.ICA, Tag.ICF, Tag.REC, Tag.ICO, Tag.BLE, Tag.CSH, Tag.DIV, Tag.INF]
         )
         Type(name=Type.FIL)
         Type(name=Type.ICR)
