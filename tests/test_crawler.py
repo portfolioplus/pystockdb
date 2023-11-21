@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """ pystockdb
 
@@ -7,65 +6,69 @@
   Use of this source code is governed by an MIT-style license that
   can be found in the LICENSE file.
 """
-import unittest
 
 from pystockdb.tools.data_crawler import DataCrawler
 from pystockdb.tools.fundamentals import Fundamentals
+import pytest
+import json
+
+SYMBOLS = ['OTCMKTS:ADDDF', 'OTCMKTS:BAYZF', 'OTCMKTS:BMWYY', 'NASDAQ:ADP', 'NASDAQ:BBBY']
+SYMBOLS_Y = ['ADDDF', 'BAYZF', 'BMWYY', 'ADP']
+
+@pytest.fixture
+def fundamentals_instance():
+    return Fundamentals()
 
 
-class TestCrawler(unittest.TestCase):
+@pytest.fixture
+def crawler_instance():
+    return DataCrawler(True)
 
-    SYMBOLS = ['OTCMKTS:ADDDF', 'OTCMKTS:BAYZF', 'OTCMKTS:BMWYY', 'NASDAQ:ADP', 'NASDAQ:BBBY']
-    SYMBOLS_Y = ['ADDDF', 'BAYZF', 'BMWYY', 'ADP']
-
-    def test_fundamentals(self):
-        """
-        Test stock fundamentals crawler
-        :return:
-        """
-        fundamentals = Fundamentals(base_url=Fundamentals.BASE_URL)
-        brief = fundamentals.get_company_brief('913261697')
-        income = fundamentals.get_sheet('913261697', 1)
-        balance = fundamentals.get_sheet('913261697', 2)
-        cash_flow = fundamentals.get_sheet('913261697', 3)
-
-        search_results = fundamentals.search('Adidas')
-        self.assertIsNotNone(search_results)
-        self.assertIn('tickerId', search_results[0])
-        ads_id = search_results[0]['tickerId']
-        income_2 = fundamentals.get_income_facts(ads_id)
-        income_analyse = fundamentals.get_income_analysis(ads_id)
-        recommendation = fundamentals.get_recommendation(ads_id)
-        ticker = fundamentals.get_ticker_ids(TestCrawler.SYMBOLS)
-        self.assertEqual(len(ticker), 5)
-        self.assertTrue(
-          any([symbol in ticker for symbol in TestCrawler.SYMBOLS])
-        )
-        self.assertTrue(
-          any([income, balance, cash_flow, brief, income_2,
-              income_analyse, recommendation, ticker])
-        )
-
-    def test_crawler(self):
-        """
-        Test stock data crawler
-        :return:
-        """
-        crawler = DataCrawler(True)
-        price = crawler.get_last_price('ADS.F')
-        self.assertIsNotNone(price)
-        price_stack = crawler.get_last_price_stack(TestCrawler.SYMBOLS_Y)
-        self.assertTrue(
-          any([symbol in price_stack and price_stack[symbol]
-              for symbol in TestCrawler.SYMBOLS_Y])
-        )
-        ads_day = crawler.get_series('ADS.F', '1d')
-        self.assertIsNotNone(ads_day)
-        dax_day = crawler.get_series('DAX', '1d')
-        self.assertIsNotNone(dax_day)
-        dax_day = crawler.get_series_stack(['DAX'], '1d')
-        self.assertIsNotNone(dax_day)
+@pytest.mark.order(1)
+def test_fundamentals(fundamentals_instance):
+    """
+    Test stock fundamentals crawler
+    """
+    dividends = fundamentals_instance.get_dividends('ADDDF')
+    dividends_dumps = json.dumps(dividends)
+    assert dividends_dumps
+    brief = fundamentals_instance.get_company_brief('ADS.F')
+    brief_dump = json.dumps(brief)
+    assert brief_dump
+    income = fundamentals_instance.get_income('ADS.F')
+    income_dump = json.dumps(income)
+    assert income_dump
+    recommendation = fundamentals_instance.get_recommendation('ADS.F')
+    recommendation_dump = json.dumps(recommendation)
+    assert recommendation_dump
+    cash_flow = fundamentals_instance.get_cash_flow('ADS.F')
+    cash_flow_dump = json.dumps(cash_flow)
+    assert cash_flow_dump
+    balance = fundamentals_instance.get_balance('ADS.F')
+    balance_dump = json.dumps(balance)
+    assert balance_dump
+    dividends = fundamentals_instance.get_dividends('ADS.F')
+    dividends_dumps = json.dumps(dividends)
+    assert dividends_dumps
+    assert any([income, balance, cash_flow, brief, recommendation, dividends])
 
 
-if __name__ == "__main__":
-    unittest.main()
+@pytest.mark.order(2)
+def test_crawler(crawler_instance):
+    """
+    Test stock data crawler
+    """
+    price = crawler_instance.get_last_price('ADS.F')
+    assert price is not None
+
+    price_stack = crawler_instance.get_last_price_stack(SYMBOLS_Y)
+    assert any([symbol in price_stack and price_stack[symbol] for symbol in SYMBOLS_Y])
+
+    ads_day = crawler_instance.get_series('ADS.F', '1d')
+    assert ads_day is not None
+
+    dax_day = crawler_instance.get_series('DAX', '1d')
+    assert dax_day is not None
+
+    dax_day_stack = crawler_instance.get_series_stack(['DAX'], '1d')
+    assert dax_day_stack is not None

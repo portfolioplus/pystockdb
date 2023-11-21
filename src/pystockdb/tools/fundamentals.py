@@ -7,121 +7,158 @@
   Use of this source code is governed by an MIT-style license that
   can be found in the LICENSE file.
 """
-import base64
+from pandas import Timestamp
+import yfinance as yf
+from typing import Optional, Dict, Any, Union
 
-from uplink import Consumer, Query, get, params, returns
 
+class Fundamentals:
 
-class Fundamentals(Consumer):
-    BASE_URL = base64.b64decode(
-        'aHR0cDovL3NlY3VyaXRpZXNhcGkuc3RvY2tzNjY2LmNvbS8='
-    ).decode('utf-8')
+    def __convert_timestamps(obj):
+        if isinstance(obj, dict):
+            return {Fundamentals.__convert_timestamps(k): Fundamentals.__convert_timestamps(v) for k, v in obj.items()}
+        elif isinstance(obj, Timestamp):
+            return str(obj)
+        else:
+            return obj
 
-    @returns.json(key='list')
-    @params({'hasNumber': 0, 'clientOrder': 3, 'queryNumber': 30})
-    @get('/api/search/tickers5')
-    def search(self, keys: Query):
+    def _get_attribute(self, stock: yf.Ticker, attribute_name: str, as_dict: bool = False) -> Optional[Any]:
         """
-        Search for stock by name
-        :param keys: stock name or search string
-        :return: json data
-        """
+        Helper function to retrieve a specific attribute from a yfinance Ticker object.
 
-    def get_ticker_ids(self, symbols: Query):
-        """
-        Converts symbols to ticker ids
-        :param symbols: a list of stock symbols [ETR:ADS,ETR:RIB]
-        :return: ticker ids
-        """
-        chunks = [symbols[x:x + 50] for x in range(0, len(symbols), 50)]
-        ticker_dict = {}
-        for chunk in chunks:
-            data = self.__get_ticker_ids(','.join(chunk))
-            for item in data:
-                key = '{}:{}'.format(item['sourceExchangeCode'],
-                                     item['tickerSymbol'])
-                ticker_dict[key] = item['tickerId']
-        return ticker_dict
+        Args:
+            stock (yf.Ticker): The yfinance Ticker object.
+            attribute_name (str): The name of the attribute to retrieve.
+           as_dict (bool): If True, attempt to convert the attribute to a dictionary.
 
-    @returns.json
-    @get('/api/stocks/ticker/googleFinancial/tickerIdMapping')
-    def __get_ticker_ids(self, symbols: Query):
-        """get ticker ids raw. keep in mind that only 50 items are supported"""
+        Returns:
+            Optional[Any]: The value of the attribute if successful, otherwise None.
+        """
+        try:
+            attribute_value = getattr(stock, attribute_name)
+            return_val = attribute_value.to_dict() if as_dict and hasattr(attribute_value, 'to_dict') else attribute_value
+            if isinstance(return_val, dict):
+                # Convert timestamp keys to strings
+                return_val = Fundamentals.__convert_timestamps(return_val)
+            return return_val
+        except Exception as e:
+            print(f"Error fetching {attribute_name} data: {e}")
+            return None
 
-    @returns.json
-    @get('/api/securities/stock/{ticker_id}/recommendation')
-    def get_recommendation(self, ticker_id):
+    def get_recommendation(self, ticker_id: str) -> Dict[str, Union[Optional[Any], Optional[Any], Optional[Any]]]:
         """
-        Returns recommendation data for stock
-        :param ticker_id: ticker id
-        :return: json data
-        """
+        Returns recommendation data for a stock.
 
-    @returns.json
-    @get('/api/securities/stock/{ticker_id}/statementsV2Detail')
-    def get_income_facts(self, ticker_id):
-        """
-        Returns income data for stock
-        :param ticker_id: ticker id
-        :return: json data
-        """
+        Args:
+            ticker_id (str): The ticker id of the stock.
 
-    @returns.json
-    @get('/api/securities/stock/{ticker_id}/incomeAnalysis/crucial')
-    def get_income_analysis(self, ticker_id):
+        Returns:
+            Dict[str, Union[Optional[Any], Optional[Any], Optional[Any]]]: The recommendation data.
         """
-        Returns income analysis data for stock
-        :param ticker_id: ticker id
-        :return: json data
-        """
+        stock = yf.Ticker(ticker_id)
+        recommendations = self._get_attribute(stock, 'recommendations', True)
+        analyst_price_target = self._get_attribute(stock, 'analyst_price_target', True)
+        recommendations_summary = self._get_attribute(stock, 'recommendations_summary', True)
 
-    @returns.json
-    @get('/api/securities/stock/{ticker_id}/compBrief')
-    def get_company_brief(self, ticker_id):
-        """
-        Returns company brief data for stock
-        :param ticker_id: ticker id
-        :return: json data
-        """
+        return {
+            "recommendations": recommendations,
+            "analyst_price_target": analyst_price_target,
+            "recommendations_summary": recommendations_summary
+        }
 
-    def get_cash_flow(self, ticker_id):
-        """Returns cash flow of given symbol
-
-        :param ticker_id: ticker id of symbol
-        :type ticker_id: str
-        :return: cash flow in json format
-        :rtype: dict
+    def get_dividends(self, ticker_id: str) -> Dict[str, Union[Optional[Any], Optional[Any], Optional[Any], Optional[Any]]]:
         """
-        return self.get_sheet(ticker_id, 3)
+        Returns dividend data for a stock.
 
-    def get_balance(self, ticker_id):
-        """Returns balance of given symbol
+        Args:
+            ticker_id (str): The ticker id of the stock.
 
-        :param ticker_id: ticker id of symbol
-        :type ticker_id: str
-        :return: balance in json format
-        :rtype: dict
+        Returns:
+            Dict[str, Union[Optional[Any], Optional[Any], Optional[Any], Optional[Any]]]: The dividend data.
         """
-        return self.get_sheet(ticker_id, 2)
+        stock = yf.Ticker(ticker_id)
+        dividends = self._get_attribute(stock, 'dividends', True)
+        earnings_dates = self._get_attribute(stock, 'earnings_dates', True)
+        earnings_forecasts = self._get_attribute(stock, 'earnings_forecasts', True)
+        earnings_trend = self._get_attribute(stock, 'earnings_trend', True)
 
-    def get_income(self, ticker_id):
-        """Returns income of given symbol
+        return {
+            "dividends": dividends,
+            "earnings_dates": earnings_dates,
+            "earnings_forecasts": earnings_forecasts,
+            "earnings_trend": earnings_trend
+        }
 
-        :param ticker_id: ticker id of symbol
-        :type ticker_id: str
-        :return: income in json format
-        :rtype: dict
+    def get_company_brief(self, ticker_id: str) -> Dict[str, Optional[Any]]:
         """
-        return self.get_sheet(ticker_id, 1)
+        Returns company brief data for a stock.
 
-    @returns.json
-    @get('/api/securities/stock/{ticker_id}/statementsV2Detail')
-    def get_sheet(self, ticker_id, sheet_type: Query("type"),
-                  query_number: Query('queryNumber') = 300):
+        Args:
+            ticker_id (str): The ticker id of the stock.
+
+        Returns:
+            Dict[str, Optional[Any]]: The company brief data.
         """
-        Returns financial sheet(income, balance, cash flow) data for stock
-        :param ticker_id: ticker id
-        :param sheet_type: income=1, balance=2 and cashflow = 3
-        :param query_number:
-        :return:
+        stock = yf.Ticker(ticker_id)
+        info = self._get_attribute(stock, 'info')
+
+        return {
+            "info": info
+        }
+
+    def get_cash_flow(self, ticker_id: str) -> Dict[str, Union[Optional[Any], Optional[Any]]]:
         """
+        Returns cash flow data for a stock.
+
+        Args:
+            ticker_id (str): The ticker id of the stock.
+
+        Returns:
+            Dict[str, Union[Optional[Any], Optional[Any]]]: The cash flow data.
+        """
+        stock = yf.Ticker(ticker_id)
+        cash_flow = self._get_attribute(stock, 'cashflow', True)
+        cash_flow_quarterly = self._get_attribute(stock, 'quarterly_cashflow', True)
+
+        return {
+            "cash_flow": cash_flow,
+            "cash_flow_quarterly": cash_flow_quarterly
+        }
+
+    def get_balance(self, ticker_id: str) -> Dict[str, Union[Optional[Any], Optional[Any]]]:
+        """
+        Returns balance data for a stock.
+
+        Args:
+            ticker_id (str): The ticker id of the stock.
+
+        Returns:
+            Dict[str, Union[Optional[Any], Optional[Any]]]: The balance data.
+        """
+        stock = yf.Ticker(ticker_id)
+        balancesheet = self._get_attribute(stock, 'balancesheet', True)
+        quarterly_balancesheet = self._get_attribute(stock, 'quarterly_balancesheet', True)
+
+        return {
+            "balancesheet": balancesheet,
+            "quarterly_balancesheet": quarterly_balancesheet
+        }
+
+    def get_income(self, ticker_id: str) -> Dict[str, Union[Optional[Any], Optional[Any]]]:
+        """
+        Returns income data for a stock.
+
+        Args:
+            ticker_id (str): The ticker id of the stock.
+
+        Returns:
+            Dict[str, Union[Optional[Any], Optional[Any]]]: The income data.
+        """
+        stock = yf.Ticker(ticker_id)
+        income = self._get_attribute(stock, 'income_stmt', True)
+        income_quarterly = self._get_attribute(stock, 'quarterly_income_stmt', True)
+
+        return {
+            "income": income,
+            "income_quarterly": income_quarterly
+        }

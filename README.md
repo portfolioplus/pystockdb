@@ -10,7 +10,7 @@ This package provides an create, sync and update tool.
 
 At the moment we are only support a few stocks.
 If you want to have more, please contribute [pytickersymbols](https://github.com/portfolioplus/pytickersymbols).
-
+Database for stocks this package provides an create, sync and update tool.
 ## install
 
 ```shell

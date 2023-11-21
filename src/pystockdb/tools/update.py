@@ -106,7 +106,7 @@ class UpdateDataBaseStocks(DBBase):
                 (pit.stock, sym.name)
                 for pit in PriceItem
                 for sym in pit.symbols
-                if (Tag.GOG in sym.item.tags.name)
+                if (Tag.YAO in sym.item.tags.name)
                 and (Tag.USD in sym.item.tags.name)
             )
         )
@@ -119,13 +119,12 @@ class UpdateDataBaseStocks(DBBase):
                         if sym == st_sym.name:
                             stocks_filtered.append(stock)
             stocks = stocks_filtered
-        # create list of google symbols
-        gog_syms = [sto[1] for sto in stocks]
-        fundamentals = Fundamentals(base_url=Fundamentals.BASE_URL)
-        tickers = fundamentals.get_ticker_ids(gog_syms)
-        for ticker in tickers:
+        # create list of yahoo symbols
+        y_syms = [sto[1] for sto in stocks]
+        fundamentals = Fundamentals()
+        for ticker in y_syms:
             self.logger.info(
-                'Download fundamentals for {}'.format(tickers[ticker])
+                'Download fundamentals for {}'.format(ticker)
             )
             stock = [sto[0] for sto in stocks if sto[1] == ticker]
             if len(stock) != 1:
@@ -134,15 +133,16 @@ class UpdateDataBaseStocks(DBBase):
                 )
                 continue
             stock = stock[0]
-            ica = fundamentals.get_income_analysis(tickers[ticker])
-            ifc = fundamentals.get_income_facts(tickers[ticker])
-            rec = fundamentals.get_recommendation(tickers[ticker])
-            ble = fundamentals.get_balance(tickers[ticker])
-            ico = fundamentals.get_income(tickers[ticker])
-            csh = fundamentals.get_cash_flow(tickers[ticker])
+            div = fundamentals.get_dividends(ticker)
+            info = fundamentals.get_company_brief(ticker)
+            rec = fundamentals.get_recommendation(ticker)
+            ble = fundamentals.get_balance(ticker)
+            ico = fundamentals.get_income(ticker)
+            csh = fundamentals.get_cash_flow(ticker)
+
             for val in [
-                (ica, Tag.ICA),
-                (ifc, Tag.ICF),
+                (div, Tag.DIV),
+                (info, Tag.INF),
                 (rec, Tag.REC),
                 (ble, Tag.BLE),
                 (ico, Tag.ICO),

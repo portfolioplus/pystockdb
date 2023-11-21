@@ -5,24 +5,30 @@ on:
     branches:
       - master
 jobs:
-  # Test
   release:
     if: "!contains(github.event.commits[0].message, '[skip ci]')"
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: [3.8]
+        python: [3.11]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Install dependencies
+        run: |
+          sudo apt-get install libcurl4-openssl-dev
       - uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python }}
       - name: Install dependencies
-        run: pip install tox
+        run: pip install poetry
       - name: Run tests
-        run: tox
+        run: |
+          poetry install --no-interaction
+          poetry run pytest tests/ --junitxml test-results/test.xml --cov src/pysymbolscanner --cov-report term-missing
       - name: Publish Unit Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1.5
+        uses: EnricoMi/publish-unit-test-result-action@v1
         if: always()
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -33,10 +39,20 @@ jobs:
           parallel: true
           debug: true
       - name: Python Semantic Release
-        uses: relekang/python-semantic-release@master
+        id: release
+        uses: python-semantic-release/python-semantic-release@v8.3.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          pypi_token: ${{ secrets.PYPI_TOKEN }}
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        if: steps.release.outputs.released == 'true'
+        with:
+          password: ${{ secrets.PYPI_TOKEN_PP }}
+      - name: Publish package distributions to GitHub Releases
+        uses: python-semantic-release/upload-to-gh-release@main
+        if: steps.release.outputs.released == 'true'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
   coveralls_finish:
     needs: release
     runs-on: ubuntu-latest
