@@ -23,21 +23,6 @@ jobs:
           python-version: ${{ matrix.python }}
       - name: Install dependencies
         run: pip install poetry
-      - name: Run tests
-        run: |
-          poetry install --no-interaction
-          poetry run pytest tests/ --junitxml test-results/test.xml --cov src/pysymbolscanner --cov-report term-missing
-      - name: Publish Unit Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1
-        if: always()
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          files: test-results/**/*.xml
-      - name: Coveralls
-        uses: AndreMiras/coveralls-python-action@develop
-        with:
-          parallel: true
-          debug: true
       - name: Python Semantic Release
         id: release
         uses: python-semantic-release/python-semantic-release@v8.3.0

@@ -131,3 +131,5 @@ tests/database_create.sqlite
 test-results/test.xml
 .vscode/launch.json
 src/pystockdb/tools/database_create.sqlite-journal
+.DS_Store
+
