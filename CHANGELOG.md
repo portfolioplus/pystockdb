@@ -2,6 +2,13 @@
 
 
 
+## v1.2.1 (2024-01-18)
+
+### Fix
+
+* fix: update libs ([`134e23d`](https://github.com/portfolioplus/pystockdb/commit/134e23d76e00787c70cd35ea6b0abb50f41804d7))
+
+
 ## v1.2.0 (2023-11-22)
 
 ### Feature

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pystockdb"
-version = "1.2.0"
+version = "1.2.1"
 description = "Database for stocks this package provides an create, sync and update tool."
 authors = ["SlashGordon <slash.gordon.dev@gmail.com>"]
 license = "MIT License"
